@@ -1,52 +1,37 @@
-<!doctype html>
-<html lang="en">
+
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Taipei MRT Tourist Map (Accurate Lines/Stations)</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-  <link rel="stylesheet" href="./style.css" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Taipei Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<style>#map{height:100vh}</style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="title">
-      <div class="h1">Taipei MRT Tourist Map</div>
-      <div class="sub">Accurate MRT geometry via Taipei City open data. Click a station → see nearby spots.</div>
-    </div>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="spots.js"></script>
+<script>
+const map=L.map('map').setView([25.05,121.55],11);
 
-    <div class="controls">
-      <input id="search" type="search" placeholder="Search station or spot (e.g., Ximen, 101, Shilin)" />
-      <select id="nearRadius">
-        <option value="800">Nearby: 800m</option>
-        <option value="1200" selected>Nearby: 1.2km</option>
-        <option value="2000">Nearby: 2.0km</option>
-        <option value="3000">Nearby: 3.0km</option>
-      </select>
-      <button id="resetBtn" title="Reset view">Reset</button>
-    </div>
+const esri=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}");
+esri.addTo(map);
 
-    <div class="filters" id="filters"></div>
-  </div>
+// routes
+fetch("data/routes.geojson").then(r=>r.json()).then(d=>{
+L.geoJSON(d,{style:{color:"red",weight:4}}).addTo(map);
+});
 
-  <div id="map"></div>
+// stations
+fetch("data/stations.geojson").then(r=>r.json()).then(d=>{
+L.geoJSON(d,{pointToLayer:(f,latlng)=>L.circleMarker(latlng,{radius:6,color:"#000",fillColor:"#fff",fillOpacity:1})}).addTo(map);
+});
 
-  <div class="sidepanel" id="sidepanel">
-    <div class="sidehead">
-      <div>
-        <div class="panelTitle" id="panelTitle">No station selected</div>
-        <div class="panelSub" id="panelSub">Tip: click a station marker.</div>
-      </div>
-      <button id="closePanel" title="Close">✕</button>
-    </div>
-    <div class="list" id="list"></div>
-  </div>
-
-  <div class="bottombar" id="statusBar">
-    Loading MRT lines & stations…
-  </div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="./spots.js"></script>
-  <script src="./app.js"></script>
+// spots
+TPE_SPOTS.forEach(s=>{
+L.marker([s.lat,s.lng]).addTo(map).bindPopup("<b>"+s.name+"</b><br>"+s.category);
+});
+</script>
 </body>
 </html>
