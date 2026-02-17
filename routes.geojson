@@ -1,1 +1,0 @@
-{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"name": "Red Line"}, "geometry": {"type": "LineString", "coordinates": [[121.505, 25.13], [121.517, 25.05], [121.565, 25.033]]}}, {"type": "Feature", "properties": {"name": "Blue Line"}, "geometry": {"type": "LineString", "coordinates": [[121.5, 25.04], [121.517, 25.05], [121.6, 25.05]]}}]}
