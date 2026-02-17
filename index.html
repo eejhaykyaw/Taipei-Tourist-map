@@ -1,37 +1,59 @@
-
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Taipei Map</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<style>#map{height:100vh}</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Taipei Tourist Map (Filters + Search + English Basemap)</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin=""/>
+
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="spots.js"></script>
-<script>
-const map=L.map('map').setView([25.05,121.55],11);
+  <div class="topbar">
+    <div class="title">
+      <div class="h1">Taipei Tourist Map</div>
+      <div class="sub">Filters + Search • English basemap options • Day trips included (Jiufen/Shifen/Yehliu/Tamsui/Keelung)</div>
+    </div>
 
-const esri=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}");
-esri.addTo(map);
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search (e.g., Ximending, museum, night market, Jiufen)" list="suggestions" />
+      <datalist id="suggestions"></datalist>
 
-// routes
-fetch("data/routes.geojson").then(r=>r.json()).then(d=>{
-L.geoJSON(d,{style:{color:"red",weight:4}}).addTo(map);
-});
+      <select id="basemap" title="Map label language depends on basemap">
+        <option value="carto_light" selected>Basemap: English (Light)</option>
+        <option value="carto_voyager">Basemap: English (Voyager)</option>
+        <option value="esri">Basemap: English-ish (Esri)</option>
+        <option value="osm">Basemap: Local labels (OSM)</option>
+      </select>
 
-// stations
-fetch("data/stations.geojson").then(r=>r.json()).then(d=>{
-L.geoJSON(d,{pointToLayer:(f,latlng)=>L.circleMarker(latlng,{radius:6,color:"#000",fillColor:"#fff",fillOpacity:1})}).addTo(map);
-});
+      <button id="resetBtn" title="Reset view and clear filters">Reset</button>
+    </div>
 
-// spots
-TPE_SPOTS.forEach(s=>{
-L.marker([s.lat,s.lng]).addTo(map).bindPopup("<b>"+s.name+"</b><br>"+s.category);
-});
-</script>
+    <div class="filters" id="filters"></div>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="sidepanel" id="sidepanel">
+    <div class="sidehead">
+      <div>
+        <div class="panelTitle" id="panelTitle">All spots</div>
+        <div class="panelSub" id="panelSub">Use filters/search. Tap an item to focus it.</div>
+      </div>
+      <button id="closePanel" title="Close">✕</button>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <div class="bottombar" id="statusBar">Loading…</div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
+
+  <script src="./spots.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
